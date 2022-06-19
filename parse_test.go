@@ -37,8 +37,12 @@ func TestParse(t *testing.T) {
 			{typ: "file", path: ".config/whatever/conf", abbreviation: "cw"},
 		}
 
-		g.It("parse valid strings that have no comments", func() {
+		var homePath, _ = os.UserHomeDir()
+		var flags = Flags{
+			homePath: homePath,
+		}
 
+		g.It("parse valid strings that have no comments", func() {
 			var res = []struct {
 				in   string
 				want []Bookmark
@@ -58,7 +62,7 @@ func TestParse(t *testing.T) {
 			}
 
 			for _, pair := range res {
-				var out, _ = parseFile(pair.in)
+				var out, _ = parseFile(pair.in, flags)
 				g.Assert(out).Equal(pair.want)
 			}
 		})
@@ -83,7 +87,7 @@ func TestParse(t *testing.T) {
 			}
 
 			for _, pair := range res {
-				var out, _ = parseFile(pair.in)
+				var out, _ = parseFile(pair.in, flags)
 				g.Assert(out).Equal(pair.want)
 			}
 		})
@@ -108,7 +112,7 @@ func TestParse(t *testing.T) {
 			}
 
 			for _, pair := range res {
-				var _, err = parseFile(pair.in)
+				var _, err = parseFile(pair.in, flags)
 				g.Assert(err).Equal(pair.want)
 			}
 		})

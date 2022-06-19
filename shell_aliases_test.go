@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -18,11 +17,20 @@ func TestShellAlias(t *testing.T) {
 
 	g.Describe("generate correct shell aliases", func() {
 		var homeDir, _ = os.UserHomeDir()
-		flags = Flags{
-			homePath: homeDir,
-			editor:   "vim",
+		var flags = Flags{
+			homePath:       homeDir,
+			editor:         "vim",
+			shellAliasFile: path.Join(homeDir, ".config", "shell", "aliasrc"),
 		}
-		AppFs.MkdirAll(path.Join(flags.homePath, ".config", "shell"), os.ModeDir)
+		g.Before(func() {
+
+			AppFs.MkdirAll(path.Join(flags.homePath, ".config", "shell"), os.ModeDir)
+		})
+
+		g.BeforeEach(func() {
+			AppFs.Create(path.Join(flags.homePath, ".config", "shell", "aliasrc"))
+		})
+
 		g.It("with file type", func() {
 			var bookmarks = []Bookmark{
 				{
@@ -47,10 +55,9 @@ func TestShellAlias(t *testing.T) {
 				"alias cfabs='vim /absolute/path/to/nowhere.ini'",
 			}
 			var want = strings.Join(strs, "\n") + "\n"
-			generateShellAliases(bookmarks)
-			var file, _ = AppFs.OpenFile(path.Join(flags.homePath, ".config", "shell", "aliasrc"), os.O_RDONLY, os.ModeType)
-			var text, _ = ioutil.ReadAll(file)
-			g.Assert(string(text)).Equal(want)
+			generateShellAliases(bookmarks, flags)
+			var text, _, _ = readTextFromFile(path.Join(flags.homePath, ".config", "shell", "aliasrc"))
+			g.Assert(text).Equal(want)
 		})
 
 		g.It("with dir type", func() {
@@ -77,10 +84,9 @@ func TestShellAlias(t *testing.T) {
 				"alias cabs='cd /absolute/path/to/nowhere'",
 			}
 			var want = strings.Join(strs, "\n") + "\n"
-			generateShellAliases(bookmarks)
-			var file, _ = AppFs.OpenFile(path.Join(flags.homePath, ".config", "shell", "aliasrc"), os.O_RDONLY, os.ModeType)
-			var text, _ = ioutil.ReadAll(file)
-			g.Assert(string(text)).Equal(want)
+			generateShellAliases(bookmarks, flags)
+			var text, _, _ = readTextFromFile(path.Join(flags.homePath, ".config", "shell", "aliasrc"))
+			g.Assert(text).Equal(want)
 		})
 	})
 }

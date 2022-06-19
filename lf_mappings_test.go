@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -22,7 +21,7 @@ func TestLfMappings(t *testing.T) {
 
 	g.Describe("lf mappings generation works", func() {
 		var homeDir, _ = os.UserHomeDir()
-		flags = Flags{
+		var flags = Flags{
 			homePath: homeDir,
 			editor:   "vim",
 		}
@@ -63,11 +62,10 @@ func TestLfMappings(t *testing.T) {
 			}
 			var want = strings.Join(strs, "\n")
 
-			generateLfMappings(bookmarks)
+			generateLfMappings(bookmarks, flags)
 
-			var file, _ = AppFs.OpenFile(path.Join(flags.homePath, ".config", "lf", "lfrc"), os.O_RDONLY, os.ModeType)
-			var text, _ = ioutil.ReadAll(file)
-			g.Assert(string(text)).Equal(want)
+			var text, _, _ = readTextFromFile(path.Join(homeDir, ".config", "lf", "lfrc"))
+			g.Assert(text).Equal(want)
 		})
 
 		g.It("append if the file already has something written", func() {
@@ -100,11 +98,10 @@ func TestLfMappings(t *testing.T) {
 			}
 			var want = strings.Join(strs, "\n")
 
-			generateLfMappings(bookmarks)
+			generateLfMappings(bookmarks, flags)
 
-			var file, _ = AppFs.OpenFile(path.Join(flags.homePath, ".config", "lf", "lfrc"), os.O_RDONLY, os.ModeType)
-			var text, _ = ioutil.ReadAll(file)
-			g.Assert(string(text)).Equal(want)
+			var text, _, _ = readTextFromFile(path.Join(homeDir, ".config", "lf", "lfrc"))
+			g.Assert(text).Equal(want)
 		})
 
 		g.It("replace the old generation", func() {
@@ -135,11 +132,10 @@ func TestLfMappings(t *testing.T) {
 			}
 			var want = strings.Join(strs, "\n")
 
-			generateLfMappings(bookmarks)
+			generateLfMappings(bookmarks, flags)
 
-			var file, _ = AppFs.OpenFile(path.Join(flags.homePath, ".config", "lf", "lfrc"), os.O_RDONLY, os.ModeType)
-			var text, _ = ioutil.ReadAll(file)
-			g.Assert(string(text)).Equal(want)
+			var text, _, _ = readTextFromFile(path.Join(homeDir, ".config", "lf", "lfrc"))
+			g.Assert(text).Equal(want)
 		})
 	})
 }
