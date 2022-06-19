@@ -19,7 +19,7 @@ func addHome(filepath string) string {
 	return path.Join(dir, filepath)
 }
 
-func Test(t *testing.T) {
+func TestParse(t *testing.T) {
 	var g = Goblin(t)
 
 	g.Describe("parseFile works", func() {
