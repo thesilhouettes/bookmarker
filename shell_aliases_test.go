@@ -88,5 +88,29 @@ func TestShellAlias(t *testing.T) {
 			var text, _, _ = readTextFromFile(path.Join(flags.homePath, ".config", "shell", "aliasrc"))
 			g.Assert(text).Equal(want)
 		})
+
+		g.It("with alias shell", func() {
+			var bookmarks = []Bookmark{
+				{
+					typ:          "shell",
+					path:         "sudo apt update && sudo apt upgrade",
+					abbreviation: "update",
+				},
+				{
+					typ:          "shell",
+					path:         "exa -la",
+					abbreviation: "ls",
+				},
+			}
+			var strs = []string{
+				"alias update='sudo apt update && sudo apt upgrade'",
+				"alias ls='exa -la'",
+			}
+			var want = strings.Join(strs, "\n") + "\n"
+			generateShellAliases(bookmarks, flags)
+			var text, _, _ = readTextFromFile(path.Join(flags.homePath, ".config", "shell", "aliasrc"))
+			g.Assert(text).Equal(want)
+		})
+
 	})
 }

@@ -99,7 +99,7 @@ func TestParse(t *testing.T) {
 			}{
 				{
 					in:   " /varr",
-					want: errors.New("abbreviation is empty"),
+					want: errors.New("not enough arguments for line /varr"),
 				},
 				{
 					in:   "v /varr",
@@ -108,6 +108,55 @@ func TestParse(t *testing.T) {
 				{
 					in:   "cj .config/jj",
 					want: errors.New("filepath .config/jj does not exist"),
+				},
+			}
+
+			for _, pair := range res {
+				var _, err = parseFile(pair.in, flags)
+				g.Assert(err).Equal(pair.want)
+			}
+		})
+
+		g.It("parse lines that starts with !", func() {
+			var res = []struct {
+				in   string
+				want []Bookmark
+			}{
+				{
+					in: "!h echo 'hello world'\n!s systemctl suspend",
+					want: []Bookmark{
+						{typ: "shell", path: "echo 'hello world'", abbreviation: "h"},
+						{typ: "shell", path: "systemctl suspend", abbreviation: "s"},
+					},
+				},
+				{
+					in:   "#! This does nothing",
+					want: []Bookmark{},
+				},
+			}
+
+			for _, pair := range res {
+				var out, _ = parseFile(pair.in, flags)
+				g.Assert(out).Equal(pair.want)
+			}
+		})
+
+		g.It("invalid lines that start with ! throws error", func() {
+			var res = []struct {
+				in   string
+				want error
+			}{
+				{
+					in:   "!",
+					want: errors.New("line ! is missing aliased command"),
+				},
+				{
+					in:   "!k",
+					want: errors.New("line !k is missing aliased command"),
+				},
+				{
+					in:   "! echo 'hi'",
+					want: errors.New("line ! echo 'hi' is missing abbreviation"),
 				},
 			}
 
