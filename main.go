@@ -19,6 +19,9 @@ type Flags struct {
 	debug          bool
 	editor         string
 	shellAliasFile string
+  shellAliasFolderPrefix string
+  shellAliasFilePrefix string
+  lfMappingPrefix string
 }
 
 var parseCommand = func() {
@@ -77,6 +80,9 @@ var parseCommand = func() {
 	rootCmd.Flags().StringVarP(&flags.shellAliasFile, "alias-file", "a", path.Join(homedir, ".config", "shell", "aliasrc"), "The filepath for the shell alias file. Remember to source it in your *rc or *profile files")
 	rootCmd.Flags().BoolVarP(&flags.debug, "debug", "v", false, "Enable debug output (warning: lots of unnecessary information)")
 	// rootCmd.Flags().BoolVarP(&flags.disableValidation, "no-validate-path", "P", false, "Do not check if the paths in the input file exist")
+  rootCmd.Flags().StringVarP(&flags.shellAliasFolderPrefix, "shell-alias-folder-prefix", "F", "cd", "The prefix for folder shortcuts in shell alias generator (default: cd)")
+  rootCmd.Flags().StringVarP(&flags.shellAliasFilePrefix, "shell-alias-file-prefix", "G", "cf", "The prefix for file shortcuts in shell alias generator (default: cf)")
+  rootCmd.Flags().StringVarP(&flags.lfMappingPrefix, "lf-mapping-prefix", "X", "g", "The prefix for shortcuts in lf generator (default: g)")
 
 	// parse the command and run the callback
 	var parseErr = rootCmd.Execute()

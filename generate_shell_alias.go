@@ -27,9 +27,9 @@ var generateShellAliases = func(bms []Bookmark, flags Flags) error {
 	for _, bm := range bms {
 		var line string
 		if bm.typ == "dir" {
-			line = fmt.Sprintf("alias c%s='cd %s'\n", bm.abbreviation, resolve(bm.path, flags))
+			line = fmt.Sprintf("alias %s%s='cd %s'\n", flags.shellAliasFolderPrefix, bm.abbreviation, resolve(bm.path, flags))
 		} else if bm.typ == "file" {
-			line = fmt.Sprintf("alias cf%s='%s %s'\n", bm.abbreviation, editor, resolve(bm.path, flags))
+			line = fmt.Sprintf("alias %s%s='%s %s'\n", flags.shellAliasFilePrefix, bm.abbreviation, editor, resolve(bm.path, flags))
 		} else {
 			line = fmt.Sprintf("alias %s='%s'\n", bm.abbreviation, bm.path)
 		}

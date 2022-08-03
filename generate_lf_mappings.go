@@ -23,7 +23,7 @@ var generateLfMappings = func(bms []Bookmark, flags Flags) error {
 	for _, bm := range bms {
 		// we don't need to carry about paths which are not directories
 		if bm.typ == "dir" {
-			var line = fmt.Sprintf("map g%s cd %s\n", bm.abbreviation, resolve(bm.path, flags))
+			var line = fmt.Sprintf("map %s%s cd %s\n", flags.lfMappingPrefix, bm.abbreviation, resolve(bm.path, flags))
 			log.Debugln(line)
 			lines += line
 		}
